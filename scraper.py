@@ -1,6 +1,9 @@
 import re
 from urllib.parse import urlparse
 
+# (url: str, rep: utils.response.Response): -> list
+# returns a list of urls that are scraped from the response
+# empty list for responses that are empty
 def scraper(url, resp):
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
@@ -9,6 +12,8 @@ def extract_next_links(url, resp):
     # Implementation requred.
     return list()
 
+# used to filter urls
+# add additional rules to this to filter urls
 def is_valid(url):
     try:
         parsed = urlparse(url)
