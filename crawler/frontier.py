@@ -26,6 +26,8 @@ class Frontier(object):
         # Load existing save file, or create one if it does not exist.
         self.save = shelve.open(self.config.save_file)
         if restart:
+            print("not correct")
+            print(os.path.exists(self.config.save_file))
             for url in self.config.seed_urls:
                 self.add_url(url)
         else:
@@ -38,7 +40,7 @@ class Frontier(object):
     def _parse_save_file(self):
         ''' This function can be overridden for alternate saving techniques. '''
         total_count = len(self.save)
-        tbd_count = 0
+        tbd_count = 0 
         for url, completed in self.save.values():
             if not completed and is_valid(url):
                 self.to_be_downloaded.append(url)
