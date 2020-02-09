@@ -7,25 +7,29 @@ import extractor
 # empty list for responses that are empty
 def scraper(url, resp):
     # check if no content? 
-    links = extract_next_links(url, resp)
-    print(links)
-    return [link for link in links if is_valid(link)]
+
+    # check for status codes here??
+    status_code = resp.status
+    if status_code >= 200 and status_code < 300:
+        links = extract_next_links(url, resp)
+        return [link for link in links if is_valid(link)]
+    else:
+        return list()
 
 # find links from the response here!
 def extract_next_links(url, resp):
     # CHECK FOR BAD RESPONSES HERE!
+    # check for status codes? 
 
     if resp.raw_response:
         return extractor.collect_links(resp.raw_response.content)
     else:
-        print("NOTHING HERE AT URL: " + url)
         return list()
 
 # used to filter urls
 # add additional rules to this to filter urls
 def is_valid(url):
     try:
-        print("we are checking: " + url)
         parsed = urlparse(url)
       #  print("this is the domain: " + parsed.netloc)
 
@@ -33,14 +37,13 @@ def is_valid(url):
            # print ("scheme wrong")
            # return False
 
-        if not re.match(r"^.*([(.ics)|(.cs)|(.informatics)].uci.edu)", parsed.netloc):
+        if not re.match(r"^.*(\b(\.ics|\.cs|\.informatics|\.stat)\b)\.uci\.edu", parsed.netloc):
             return False
 
         if re.match(r"^.*(today.uci.edu)", parsed.netloc):
            # print("PATH: " + parsed.path)
-            return re.match(r"^(\/department\/information_computer_sciences\/).*", parsed.path)
-
-        return False
+           if not re.match(r"^(\/department\/information_computer_sciences\/).*", parsed.path)
+                return False
 
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"

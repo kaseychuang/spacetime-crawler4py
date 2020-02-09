@@ -28,6 +28,8 @@ class Worker(Thread):
 
 
             scraped_urls = scraper(tbd_url, resp)
+            #print("VALID URLS")
+           # print(scraped_urls)
             for scraped_url in scraped_urls:
                 self.frontier.add_url(scraped_url)
             self.frontier.mark_url_complete(tbd_url)

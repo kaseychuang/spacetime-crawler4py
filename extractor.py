@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
 import lxml
+import re
+
 
 # BeautifulSoup(markup, "lxml")
 
@@ -10,7 +12,10 @@ def collect_links(markup):
 	links = list()
 
 	for link in soup.find_all('a'):
-		if link.get('href') != "#": # get rid of fragments?
-			links.append(link.get('href'))
+		url = link.get('href')
+		if type(url) == str:
+			if not re.match(r"^#.*", url):
+				links.append(url)
+ 
 
 	return links	
