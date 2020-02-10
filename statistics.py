@@ -63,6 +63,10 @@ class Statistics():
 
 		# CHECK IF CONTENT WORTH CRAWLING?
 
+		# high textual content? Maybe compare num of html tags versus text
+
+		
+
 
 		# update statistics
 		self.update_longest(url, tokens)
@@ -131,7 +135,7 @@ class Statistics():
 		freq_list = ex.get_ordered_freqs(self._freqs)
 		count = 1
 		index = 0
-		while (count <= 50 and index < len(freq_list)):
+		while (count <= 75 and index < len(freq_list)):
 			# get next most frequent word tuple
 			word, num = freq_list[index]
 			# check for english stop words

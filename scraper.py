@@ -29,8 +29,6 @@ def extract_next_links(url, resp):
         for l in links:
             l = urldefrag(l)[0]
 
-        #print(links)
-
         return links
     else:
         return list()
@@ -54,10 +52,13 @@ def is_valid(url):
                 return False
 
         # NEED BETTER FILTER FOR WRONG FILE TIMES
+            # filter out calendar??
 
-        # check if file extension is in the middle of a path
-        #if re.match(r"", parsed.path.lower()):
-         #   return False
+         #check if file extension is in the middle of a path
+        if re.match(r".*\/(css|js|bmp|gif|jpe?g|ico|png|tiff?|mid|json|mp2|mp3|mp4|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso|epub|dll|cnf|tgz|sha1r|thmx|mso|arff|rtf|jar|csvr|rm|smil|wmv|swf|wma|zip|rar|gz)\/", parsed.path.lower()):
+            #print(parsed.path)
+            #print("path contains invalid file type")
+            return False
 
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"

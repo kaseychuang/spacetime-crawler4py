@@ -5,23 +5,15 @@ import extractor as ex
 from urllib.parse import urlparse
 import re
 import tldextract
-
-
-test_url = "http://checkmate.ics.uci.edu"
-
-parsed = urlparse(test_url)
-print(parsed)
-
-match = re.match(r"(?:http:\/\/)?((?:([^.]+)\.))?ics.uci\.edu", parsed.netloc)
-
-print(match.group(2))
-
+from urllib import robotparser
 
 # Attaching relative links
 
 # add to is_valid function? 
 
-
-	
+tbd_url = "https://www.stat.uci.edu/feed/"
+robot_parser = robotparser.RobotFileParser(tbd_url)
+print(robot_parser.crawl_delay("IR WR 26286982"))
+print(robot_parser.can_fetch("IR WR 26286982", tbd_url))
 
 
