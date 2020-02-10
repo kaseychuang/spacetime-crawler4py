@@ -4,6 +4,8 @@ from utils.download import download
 from utils import get_logger
 from scraper import scraper
 import time
+import statistics
+import extractor as ex
 
 
 class Worker(Thread):
@@ -11,6 +13,7 @@ class Worker(Thread):
         self.logger = get_logger(f"Worker-{worker_id}", "Worker")
         self.config = config
         self.frontier = frontier
+        self.stats = statistics.Statistics("stats.txt")  # added this, check if it works
         super().__init__(daemon=True)
         
     def run(self):
@@ -25,7 +28,10 @@ class Worker(Thread):
                 f"using cache {self.config.cache_server}.")
             
             # USE RESP HERE TO ANALYZE DATA and store stats?
-
+            # check if the link/download is good first!!!
+            status_code = resp.status
+            if status_code >= 200 and status_code < 300: # can switch this to check later
+                self.stats.update_stats(tbd_url, resp)
 
             scraped_urls = scraper(tbd_url, resp)
             #print("VALID URLS")
@@ -35,4 +41,5 @@ class Worker(Thread):
             self.frontier.mark_url_complete(tbd_url)
 
             # can change delay here, if I want to check politeness based on website
+            # ADD CODE ON ROBOTS.TXT HERE!
             time.sleep(self.config.time_delay)

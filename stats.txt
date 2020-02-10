@@ -1,0 +1,57 @@
+Longest page: https://www.stat.uci.edu/trio-of-ics-professors-preview-tech-trends-for-2019
+ with 2184 words
+1. support - 2520
+2. school - 2505
+3. computing - 2285
+4. sitemap - 1642
+5. bren - 1469
+6. top - 1465
+7. wiki - 1438
+8. revisions - 1432
+9. changessitemaplog - 1430
+10. managerback - 1430
+11. page - 1408
+12. pageold - 1399
+13. computer - 1038
+14. available - 907
+15. pages - 856
+16. information - 847
+17. ordered - 824
+18. namespaces - 821
+19. ics - 749
+20. software - 746
+21. uci - 570
+22. statistics - 569
+23. last - 517
+24. modified - 502
+25. txt - 501
+26. luciad - 499
+27. science - 495
+28. data - 488
+29. will - 477
+30. professor - 462
+31. gif89a - 453
+32. ù - 453
+33. ÿÿÿ - 453
+34. research - 443
+35. department - 437
+36. students - 417
+37. application - 394
+38. university - 392
+39. course - 382
+40. enough - 372
+41. don - 369
+42. rights - 368
+43. student - 351
+44. program - 314
+45. quarter - 314
+46. informatics - 302
+47. uc - 301
+48. engineering - 297
+49. name - 288
+50. files - 285
+LIST OF SUBDOMAINS IN ICS.UCI.EDU
+helpdesk, 5
+mse, 5
+mswe, 21
+swiki, 1867

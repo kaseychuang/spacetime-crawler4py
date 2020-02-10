@@ -1,28 +1,37 @@
 import re
 from urllib.parse import urlparse
+from urllib.parse import urldefrag
 import extractor
+import statistics
+import lxml
 
 # (url: str, rep: utils.response.Response): -> list
 # returns a list of urls that are scraped from the response
 # empty list for responses that are empty
 def scraper(url, resp):
-    # check if no content? 
-
     # check for status codes here??
     status_code = resp.status
     if status_code >= 200 and status_code < 300:
+    # get and process links!
         links = extract_next_links(url, resp)
+        
         return [link for link in links if is_valid(link)]
     else:
         return list()
 
+
 # find links from the response here!
 def extract_next_links(url, resp):
-    # CHECK FOR BAD RESPONSES HERE!
-    # check for status codes? 
-
     if resp.raw_response:
-        return extractor.collect_links(resp.raw_response.content)
+        links = extractor.collect_links(url, resp.raw_response.content)
+
+        # de fragment them 
+        for l in links:
+            l = urldefrag(l)[0]
+
+        #print(links)
+
+        return links
     else:
         return list()
 
@@ -31,7 +40,6 @@ def extract_next_links(url, resp):
 def is_valid(url):
     try:
         parsed = urlparse(url)
-      #  print("this is the domain: " + parsed.netloc)
 
         #if parsed.scheme not in set(["http", "https"]):
            # print ("scheme wrong")
@@ -42,8 +50,14 @@ def is_valid(url):
 
         if re.match(r"^.*(today.uci.edu)", parsed.netloc):
            # print("PATH: " + parsed.path)
-           if not re.match(r"^(\/department\/information_computer_sciences\/).*", parsed.path)
+           if not re.match(r"^(\/department\/information_computer_sciences\/).*", parsed.path):
                 return False
+
+        # NEED BETTER FILTER FOR WRONG FILE TIMES
+
+        # check if file extension is in the middle of a path
+        #if re.match(r"", parsed.path.lower()):
+         #   return False
 
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
