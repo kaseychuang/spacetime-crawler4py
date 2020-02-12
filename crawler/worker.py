@@ -10,6 +10,8 @@ import time
 import statistics
 import requests
 import extractor as ex
+import re
+import urlFilter as filter
 
 
 class Worker(Thread):
@@ -26,9 +28,8 @@ class Worker(Thread):
         try:
             parsed = urlparse(url)
             base_url = parsed.scheme + "://" + parsed.netloc
-            # print("base url", base_url)
-            if base_url in self.robots.keys():
-                # grab that one
+
+            if base_url in self.robots.keys(): # if we already downloaded the robots.txt file
                 self.rparser.parse(self.robots[base_url])
             else:
                 #file = download(base_url + "/robots.txt", self.config)
@@ -58,6 +59,8 @@ class Worker(Thread):
                 return False
 
             return True
+
+        # handle bad urls
         except requests.ConnectionError:
             print("There was a connection error")
             return False
@@ -71,8 +74,13 @@ class Worker(Thread):
     def is_good_url(self, url):
 
         # CHECKING ROBOTS.TXT
-        if not self.check_robots_txt(url):
+        #if not self.check_robots_txt(url):
+           # return False
+
+        #test
+        if not filter.check_robots_txt(url):
             return False
+
 
         # MAKE HEAD REQUEST AND CHECK IF WE WANT TO ACTUALLY DOWNLOAD THIS PAGE!
         h = requests.head(url)
@@ -86,11 +94,44 @@ class Worker(Thread):
 
         # CHECK CONTENT QUALITY
         # calculate proportion of tags versus
+        # compare length of markup to length of text content
+        # get proportion
+
+        # use head request to get text? or lxml
+
 
 
         # CHECK FOR SIMILAR PAGES WITH NO INFORMATION
-            # check for repeating/extra directories
+        # compare token list and frequencies of pages? # use checksum?? or simhash??
 
+
+        # Source: https://support.archive-it.org/hc/en-us/articles/208332963-Modify-your-crawl-scope-with-a-Regular-Expression
+        # check for repeating directories
+
+        # WHY IS RE NOT MATCHING??
+
+        if re.match(r".*?([^\/\&?]{4,})(?:[\/\&\?])(.*?\1){3,}.*", url):
+            print("this is a repeating directory")
+            return False
+
+        # manually avoid this one
+        if re.match(r"https://www.ics.uci.edu/.*/stayconnected/stayconnected", url):
+            return False
+
+        # check length of url, if there are more than 12 subdirectories or slashes, then ditch it
+        if len(url) > 100:
+            print("url too long")
+            return False
+
+        # check for extra directories
+        if re.match("^.*(/misc|/sites|/all|/themes|/modules|/profiles|/css|/field|/node|/theme){3}.*$", url):
+            print("there are extra directories")
+            return False
+
+        # avoid calendars
+        if re.match("^.*calendar.*$", url):
+            print("avoiding bc this is a calendar")
+            return False
 
 
         # check if there are more tags than actual text content??

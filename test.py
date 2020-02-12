@@ -9,11 +9,8 @@ from urllib import robotparser
 
 # Attaching relative links
 
-# add to is_valid function? 
+# add to is_valid function?
 
-tbd_url = "https://www.stat.uci.edu/feed/"
-robot_parser = robotparser.RobotFileParser(tbd_url)
-print(robot_parser.crawl_delay("IR WR 26286982"))
-print(robot_parser.can_fetch("IR WR 26286982", tbd_url))
-
+print(re.match(r".*?([^\/\&?]{4,})(?:[\/\&\?])(.*?\1){3,}.*","https://www.ics.uci.edu/alumni/stayconnected/stayconnected/connected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/stayconnected/index.php"))
+print(re.match(r".*?([^\/\&?]{4,})(?:[\/\&\?])(.*?\1){3,}.*","https://www.ics.uci.edu/community/alumni/index.php/stayconnected/hall_of_fame/hall_of_fame/hall_of_fame"))
 

@@ -29,7 +29,7 @@ class Statistics():
 							"when", "when's", "where", "where's", "which", "while", 
 							"who", "who's", "whom", "why", "why's", "with", "won't", 
 							"would", "wouldn't", "you", "you'd", "you'll", "you're", "your",
-							"yours", "yourself", "yourselves"]
+							"yours", "yourself", "yourselves", "will"]
 
 	def __init__(self, filepath): # additional paramters??
 		# dictionary to store frequency of words
@@ -52,21 +52,13 @@ class Statistics():
 
 
 
-
 	#METHODS (DON'T FORGET TO INCLUDE SELF)
-	# yeah don't just feed the individual text
 	def update_stats(self, url, response):
 		self._num_urls_downloaded += 1
+		self._unique_pages.add(url)
 		# get text
 		text = ex.get_text(response.raw_response.content)
 		tokens = ex.tokenize(text)
-
-		# CHECK IF CONTENT WORTH CRAWLING?
-
-		# high textual content? Maybe compare num of html tags versus text
-
-		
-
 
 		# update statistics
 		self.update_longest(url, tokens)
@@ -93,11 +85,6 @@ class Statistics():
 	def update_frequencies(self, tokens):
 		ex.updateWordFrequencies(self._freqs, tokens)
 
-	# take note of page's subdomain and how many unique pages it has? 
-		# use a set to keep track of unique pages?
-		# dictionary with a set as a value? 
-		# can use this same dictionary to get the number of unique pages as well 
-			# should be the total of all lengths of the sets in the dictionary
 
 	def update_subdomains(self, url):
 		# CHECK IF N THE .ICS.UCI.EDU DOMAIN! 
@@ -121,17 +108,13 @@ class Statistics():
 	def update_file(self):
 		file = open(self._filepath, 'w')
 
+		# UNIQUE PAGES
+		file.write("Number of unique pages: "+ str(len(self._unique_pages)) )
 
-		# print number of unique pages (not including fragments)
-			# use number of 
+		# LONGEST PAGE (WORDS)
+		file.write("\n\nLongest page: " + self._longest[0] + "\n with " + str(self._longest[1]) + " words\n")
 
-
-		# print longest page in terms of WORDS
-		file.write("Longest page: " + self._longest[0] + "\n with " + str(self._longest[1]) + " words\n")
-
-
-		# print the list of 50 most common words ordered by frequency
-		# 	IGNORE ENGLISH STOP WORDS (reference the link on the assignment instructions)
+		# MOST COMMON WORDS IN ORDER BY FREQUENCY
 		freq_list = ex.get_ordered_freqs(self._freqs)
 		count = 1
 		index = 0
@@ -144,17 +127,12 @@ class Statistics():
 				count += 1
 			index +=1
 
-		# print list of subdomains ordered alphabetically and the num
-		# 	of unique pages detected in each subdomain
-		# 	URL, number (http://vision.ics.uci.edu, 10)
-
-		file.write("LIST OF SUBDOMAINS IN ICS.UCI.EDU\n")
+		# PRINT SUBDOMAINS
+		file.write("\nLIST OF SUBDOMAINS IN ICS.UCI.EDU\n")
 		ordered_subdomains = [(s, pgs) for (s, pgs) in sorted(self._subdomains.items(), key = lambda x: x[0])]
 
 		for sub, pages in ordered_subdomains:
 			file.write(sub + ", " + str(len(pages)) +"\n")
-
-		#print(self._subdomains)
 
 		file.close()
 
