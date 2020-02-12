@@ -44,6 +44,9 @@ def tokenize(text):
            	    tokens.append(w)
     return tokens
 
+def tokenize_url(url):
+    return True
+
 # Helper method to check if all the characters in a word are alphanumeric
 def word_is_alnum(word):
     for ch in word:

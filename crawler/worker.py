@@ -20,124 +20,26 @@ class Worker(Thread):
         self.config = config
         self.frontier = frontier
         self.stats = statistics.Statistics("stats.txt")
-        self.robots = dict()
-        self.rparser = robotparser.RobotFileParser()
         super().__init__(daemon=True)
 
-    def check_robots_txt(self, url):
-        try:
-            parsed = urlparse(url)
-            base_url = parsed.scheme + "://" + parsed.netloc
-
-            if base_url in self.robots.keys(): # if we already downloaded the robots.txt file
-                self.rparser.parse(self.robots[base_url])
-            else:
-                #file = download(base_url + "/robots.txt", self.config)
-                file = requests.get(base_url + "/robots.txt", timeout=5)
-                status_code = file.status_code
-                if status_code >= 200 and status_code < 300:
-                    # get robots.txt file content
-                    #file_content = file.raw_response.content.decode()
-                    file_content = file.text
-                    print(file_content)
-
-                    file_lines = file_content.split('\n')
-                    self.robots[base_url] = file_lines
-                    print(file_lines)
-
-                    # check robots.txt
-                    self.rparser.parse(file_lines)
-                else:
-                    print("not a good link to fetch robots file")
-                    return False
-
-            can_fetch = self.rparser.can_fetch("IR WR 26286982", url)
-            delay = self.rparser.crawl_delay("IR WR 26286982")
-
-            if not can_fetch:
-                print("not allowed to crawl")
-                return False
-
-            return True
-
-        # handle bad urls
-        except requests.ConnectionError:
-            print("There was a connection error")
-            return False
-        except requests.Timeout:
-            print("There was timeout")
-            return False
-        except requests.RequestException:
-            return False
-
-    # return bool
+    # method to check if the url is worth downloading
+        # filters in order to avoid wasting time with bad pages
     def is_good_url(self, url):
 
-        # CHECKING ROBOTS.TXT
-        #if not self.check_robots_txt(url):
-           # return False
-
-        #test
-        if not filter.check_robots_txt(url):
+        # check robots.txt
+        if not filter.allows_crawl(url):
+            print("not allowed to crawl or could not fetch file")
             return False
 
-
-        # MAKE HEAD REQUEST AND CHECK IF WE WANT TO ACTUALLY DOWNLOAD THIS PAGE!
-        h = requests.head(url)
-
-        # CHECKING CONTENT LENGTH
-        if ('Content-length' in h.headers.keys()):
-            content_length = int(h.headers['Content-length'])
-            print("Content Length: ", content_length)
-            if (content_length == 0):
-                return False
-
-        # CHECK CONTENT QUALITY
-        # calculate proportion of tags versus
-        # compare length of markup to length of text content
-        # get proportion
-
-        # use head request to get text? or lxml
-
-
-
-        # CHECK FOR SIMILAR PAGES WITH NO INFORMATION
-        # compare token list and frequencies of pages? # use checksum?? or simhash??
-
-
-        # Source: https://support.archive-it.org/hc/en-us/articles/208332963-Modify-your-crawl-scope-with-a-Regular-Expression
-        # check for repeating directories
-
-        # WHY IS RE NOT MATCHING??
-
-        if re.match(r".*?([^\/\&?]{4,})(?:[\/\&\?])(.*?\1){3,}.*", url):
-            print("this is a repeating directory")
+        if not filter.is_quality_content(url):
+            print("not quality content")
             return False
 
-        # manually avoid this one
-        if re.match(r"https://www.ics.uci.edu/.*/stayconnected/stayconnected", url):
+        if not filter.is_good_url(url):
+            print("bad url")
             return False
-
-        # check length of url, if there are more than 12 subdirectories or slashes, then ditch it
-        if len(url) > 100:
-            print("url too long")
-            return False
-
-        # check for extra directories
-        if re.match("^.*(/misc|/sites|/all|/themes|/modules|/profiles|/css|/field|/node|/theme){3}.*$", url):
-            print("there are extra directories")
-            return False
-
-        # avoid calendars
-        if re.match("^.*calendar.*$", url):
-            print("avoiding bc this is a calendar")
-            return False
-
-
-        # check if there are more tags than actual text content??
 
         return True
-
 
     def run(self):
         while True:
@@ -157,12 +59,13 @@ class Worker(Thread):
                     f"using cache {self.config.cache_server}.")
 
                 status_code = resp.status
-                #print("STATUS: ", status_code)
                 if status_code >= 200 and status_code < 300: # can switch this to check later
                     self.stats.update_stats(tbd_url, resp)
                     scraped_urls = scraper(tbd_url, resp)
                     for scraped_url in scraped_urls:
                         self.frontier.add_url(scraped_url)
+                #else:
+                   # print("bad status so don't do anything with it")
                 self.frontier.mark_url_complete(tbd_url)
 
                 # can change delay here, if I want to check politeness based on website
