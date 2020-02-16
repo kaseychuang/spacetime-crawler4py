@@ -4,6 +4,8 @@ from urllib.parse import urldefrag
 import extractor
 import statistics
 import lxml
+import extractor
+import urlFilter as filter
 
 # (url: str, rep: utils.response.Response): -> list
 # returns a list of urls that are scraped from the response
@@ -14,8 +16,8 @@ def scraper(url, resp):
     if status_code >= 200 and status_code < 300:
     # get and process links!
         links = extract_next_links(url, resp)
-        
-        return [link for link in links if is_valid(link)]
+        new_links = [link for link in links if is_valid(link)]
+        return new_links
     else:
         return list()
 
@@ -23,11 +25,20 @@ def scraper(url, resp):
 # find links from the response here!
 def extract_next_links(url, resp):
     if resp.raw_response:
-        links = extractor.collect_links(url, resp.raw_response.content)
 
-        # de fragment them 
-        for l in links:
-            l = urldefrag(l)[0]
+        # CHECK IF THE WEBPAGE IS JUST A TAGS?
+        markup = resp.raw_response.content
+        num_tokens = len(extractor.tokenize(extractor.get_text(markup)))
+        num_tags = extractor.get_num_tags(markup)
+
+        # check if there are too many tags versus the text
+        if num_tokens:
+            percentage = num_tokens / num_tags
+            if (percentage < 0.2):
+                print("GREEATER NUM OF TAGS THAN TEXT")
+                return list()
+
+        links = extractor.collect_links(url, resp.raw_response.content)
 
         return links
     else:
@@ -36,8 +47,12 @@ def extract_next_links(url, resp):
 # used to filter urls
 # add additional rules to this to filter urls
 def is_valid(url):
+    #print("calling isvalid")
     try:
         parsed = urlparse(url)
+
+        #print("test: ", parsed.scheme)
+
 
         #if parsed.scheme not in set(["http", "https"]):
            # print ("scheme wrong")
@@ -58,6 +73,9 @@ def is_valid(url):
         if re.match(r".*\/(css|js|bmp|gif|jpe?g|ico|png|tiff?|mid|json|mp2|mp3|mp4|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso|epub|dll|cnf|tgz|sha1r|thmx|mso|arff|rtf|jar|csvr|rm|smil|wmv|swf|wma|zip|rar|gz)\/", parsed.path.lower()):
             #print(parsed.path)
             #print("path contains invalid file type")
+            return False
+
+        if not filter.is_good_url(url):
             return False
 
         return not re.match(

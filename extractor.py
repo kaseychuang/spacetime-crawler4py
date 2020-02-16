@@ -1,34 +1,40 @@
 from bs4 import BeautifulSoup
+#https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 import lxml
 from lxml import html
 import re
+from urllib.parse import urldefrag
 
 
-# BeautifulSoup(markup, "lxml")
+
 
 # returns a list of links (later)
 def collect_links(url, markup):
 
-	string_doc = html.fromstring(markup)	
-	string_doc.make_links_absolute(url)
-	links = list(string_doc.iterlinks())
-	links = [l[2] for l in links]
+    try:
+        string_doc = html.fromstring(markup)
+        string_doc.make_links_absolute(url)
+        links = list(string_doc.iterlinks())
+        my_links = [urldefrag(l[2])[0] for l in links]
+        return my_links
+    except: # if we run into an Empty Document, return an empty list
+        return list()
 
-	#for i in links:
-	#	print(i)
-
-
-	return links
 
 # get text
 def get_text(markup):
 	soup = BeautifulSoup(markup, 'lxml')
-
 	for script in soup(["script", "style"]):
 		script.decompose()
-
 	text = soup.get_text()
 	return text
+
+# returns the number of tags in a html markup
+def get_num_tags(markup):
+    soup = BeautifulSoup(markup, 'lxml')
+    tag_list = soup.find_all(True)
+    if tag_list:
+        return len(tag_list)
 
 
 def tokenize(text):
@@ -44,8 +50,13 @@ def tokenize(text):
            	    tokens.append(w)
     return tokens
 
+
 def tokenize_url(url):
-    return True
+    # split by parentehsis
+    pieces = re.split('/', url)
+    while ('' in pieces):
+        pieces.remove('')
+    return pieces
 
 # Helper method to check if all the characters in a word are alphanumeric
 def word_is_alnum(word):

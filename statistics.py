@@ -29,7 +29,7 @@ class Statistics():
 							"when", "when's", "where", "where's", "which", "while", 
 							"who", "who's", "whom", "why", "why's", "with", "won't", 
 							"would", "wouldn't", "you", "you'd", "you'll", "you're", "your",
-							"yours", "yourself", "yourselves", "will"]
+							"yours", "yourself", "yourselves", "will", "www", "sdcl", "pp", "der", "hoek"]
 
 	def __init__(self, filepath): # additional paramters??
 		# dictionary to store frequency of words

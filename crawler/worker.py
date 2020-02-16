@@ -25,18 +25,19 @@ class Worker(Thread):
     # method to check if the url is worth downloading
         # filters in order to avoid wasting time with bad pages
     def is_good_url(self, url):
+        print("checking if good url")
+        if not filter.is_good_url(url):
+            print("bad url")
+            return False
 
         # check robots.txt
-        if not filter.allows_crawl(url):
-            print("not allowed to crawl or could not fetch file")
-            return False
+        #
+        # if not filter.allows_crawl(url):
+        #     print("not allowed to crawl or could not fetch file")
+        #     return False
 
         if not filter.is_quality_content(url):
             print("not quality content")
-            return False
-
-        if not filter.is_good_url(url):
-            print("bad url")
             return False
 
         return True
@@ -47,6 +48,8 @@ class Worker(Thread):
             if not tbd_url:
                 self.logger.info("Frontier is empty. Stopping Crawler.")
                 break
+
+            # defragment the URL
 
             print("URL: ", tbd_url)
             good_url = self.is_good_url(tbd_url)
@@ -64,9 +67,14 @@ class Worker(Thread):
                     scraped_urls = scraper(tbd_url, resp)
                     for scraped_url in scraped_urls:
                         self.frontier.add_url(scraped_url)
-                #else:
-                   # print("bad status so don't do anything with it")
+                else:
+                    print("downloaded, but do nothing with it")
                 self.frontier.mark_url_complete(tbd_url)
 
+                #print("trying to get delay")
                 # can change delay here, if I want to check politeness based on website
-                time.sleep(self.config.time_delay)
+                delay = filter.get_delay(tbd_url)
+                if delay:
+                    time.sleep(delay)
+                else:
+                    time.sleep(self.config.time_delay)
